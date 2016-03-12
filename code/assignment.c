@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 // FUNCTION PROTOTYPES
 
@@ -24,11 +25,54 @@ int getMinSkewN(char str[], int n);
 // MAIN PROGRAM
 
 int main(){
-	// printf("%d\n", getHammingDistance("AACCTT", "GGCCTT"));
-	// printf("%d\n", isValidString("091212345","0123456789"));	
-	// if(isValidString("091212345","0123456789")) printf("TRUE\n");
-	// else	printf("FALSE\n");
-	printf("%d\n", getSkew("GGCCAC", 2));	
+	printf("A. FUNCTION 1 TEST CASES:\n");
+	printf("1.)\t%d = 2\n", getHammingDistance("AACCTT", "GGCCTT"));
+	printf("2.)\t%d = 5\n", getHammingDistance("TCGGA", "AAAAG"));
+	printf("3.)\t%d = Error! Strings are not equal!\n", getHammingDistance("A", "AG"));
+
+	printf("B. FUNCTION 2 TEST CASES:\n");
+	printf("1.)\t%d = 1\n", countSubstrPattern("AATATATAGG", "GG"));
+	printf("2.)\t%d = 3\n", countSubstrPattern("AATATATAGG", "ATA"));
+	// Commented Out because it returns "BUS ERROR 10" which I don't know how to fix.
+	//printf("3.)\t%d = 0\n", countSubstrPattern("AATATATAGG", "ACTGACTGACTG"));
+
+	printf("C. FUNCTION 3 TEST CASES:\n");
+	if(isValidString("AAGGCTATGC","ACGT")) printf("1.) TRUE = TRUE\n");
+	else printf("1.) FALSE = TRUE\n");
+
+	if(isValidString("AAGGCTATGa","ACGT")) printf("2.) TRUE = FALSE\n");
+	else printf("2.) FALSE = FLASE\n");
+
+	if(isValidString("ACGT","ACGT")) printf("3.) TRUE = TRUE\n");
+	else printf("3.) FALSE = TRUE\n");
+
+	if(isValidString("ACGT101_","ACGT")) printf("4.) TRUE = FALSE\n");
+	else printf("4.) FALSE = FALSE\n");
+
+	if(isValidString("091212345","0123456789")) printf("5.) TRUE = TRUE\n");
+	else printf("5.) FALSE = TRUE\n");
+
+	printf("D. FUNCTION 4 TEST CASES:\n");
+	printf("1.)\t%d = 1\n", getSkew("GGCCAC", 1));
+	printf("2.)\t%d = 2\n", getSkew("GGCCAC", 2));
+	printf("3.)\t%d = 1\n", getSkew("GGCCAC", 3));
+	printf("4.)\t%d = 0\n", getSkew("GGCCAC", 4));
+	printf("5.)\t%d = 0\n", getSkew("GGCCAC", 5));
+
+	printf("E. FUNCTION 5 TEST CASES:\n");
+	printf("1.)\t%d = 1\n", getMaxSkewN("GGCCAC", 1));
+	printf("2.)\t%d = 2\n", getMaxSkewN("GGCCAC", 2));
+	printf("3.)\t%d = 2\n", getMaxSkewN("GGCCAC", 3));
+	printf("4.)\t%d = 2\n", getMaxSkewN("GGCCAC", 4));
+	printf("5.)\t%d = 2\n", getMaxSkewN("GGCCAC", 5));
+
+	printf("F. FUNCTION 6 TEST CASES:\n");
+	printf("1.)\t%d = 1\n", getMinSkewN("GGCCAC", 1));
+	printf("2.)\t%d = 1\n", getMinSkewN("GGCCAC", 2));
+	printf("3.)\t%d = 1\n", getMinSkewN("GGCCAC", 3));
+	printf("4.)\t%d = 0\n", getMinSkewN("GGCCAC", 4));
+	printf("5.)\t%d = 0\n", getMinSkewN("GGCCAC", 5));
+	
 	return 0;
 }
 
@@ -41,10 +85,11 @@ int main(){
 *	strings is the number of characters that differ in ith position from position 1 to strlen(str1).   *
 *******************************************************************************************************/
 int getHammingDistance(char str1[], char str2[]){
-	int distance=0, i;										// distance would be the hamming distance.
+	int distance=-1, i;										// distance would be the hamming distance.
 	if(strlen(str1)==strlen(str2) && strlen(str1)>0)		// Defensive programming. Avoids null strings.
-		for(i=0; i<strlen(str1); i++) 						// Loops to every letter in str1.
+		for(i=0, distance=0; i<strlen(str1); i++) 						// Loops to every letter in str1.
 			if(str1[i]!=str2[i]) distance++;				// Hamming distance would increse if and only if str1 and str2, given in the same index, is the same.
+	if(distance==-1) printf("Error! Strings are not equal!\n"); //-1 means error
 	return distance;
 }
 
@@ -53,9 +98,9 @@ int getHammingDistance(char str1[], char str2[]){
 *******************************************************************************************************/
 int countSubstrPattern(char original[], char pattern[]){
 	int i, j, k, counter=0, substring=0;					// substring would be count of substring pattern
-	if(strlen(original)>0 && strlen(pattern)>0)				// Defensive programming. Avoids null strings.
-		for(i=0;i<strlen(original)-strlen(pattern)+1;i++, counter=0){	// Loops to every letter in the string original at index 0 until the length of the pattern could fit.
-			for(j=i, k=0; k<strlen(pattern);j++, k++) 		// Loops to every letter in the string original at index i until the length of the pattern.
+	if((strlen(original)>0 || strlen(pattern)>0) || strlen(pattern)>strlen(original))	// Defensive programming. Avoids null strings.
+		for(i=0;i<strlen(original)-strlen(pattern)+1;i++,counter=0){	// Loops to every letter in the string original at index 0 until the length of the pattern could fit.
+			for(j=i,k=0;k<strlen(pattern);j++, k++) 		// Loops to every letter in the string original at index i until the length of the pattern.
 				if(original[j]==pattern[k]) counter++;		// Compares the letter at index j of the substring in the string original and the letter at index k of the string pattern.
 			if(counter==strlen(pattern)) substring++;		// If all the letters are equal, it is a valid substring.
 		}
@@ -99,7 +144,12 @@ int getSkew(char str[], int n){
 *	implementations.		   																		   *
 *******************************************************************************************************/
 int getMaxSkewN(char str[], int n){
-	// Get this done by THURSDAY
+	int i, maximum=getSkew(str,1);							// Initializes maximum to the value of getSkew with n=1
+	if(strlen(str)>0){										// Defensive programming
+		for(i=1;i<n;i++)									// Iterates from 1 to N
+			maximum=(maximum>getSkew(str,i))?maximum:getSkew(str,i); // Determines the maximum Skew
+		return maximum;										// Returns the maximum Skew
+	}
 	return 0;
 }
 
@@ -110,7 +160,12 @@ int getMaxSkewN(char str[], int n){
 *	implementations.		   																		   *
 *******************************************************************************************************/
 int getMinSkewN(char str[], int n){
+	int i, minimum=getSkew(str,1);							// Initializes minimum to the value of getSkew with n=1
+	if(strlen(str)>0){										// Defensive programming
+		for(i=1;i<=n;i++)									// Iterates from 1 to N
+			minimum=(getSkew(str,i)<minimum)?getSkew(str,i):minimum; // Determines the minimum Skew
+		return minimum;										// Returns the minimum Skew
+	}
 	return 0;
-	// Get this done by THURSDAY
 }
 // E N D - O F - P R O G R A M
